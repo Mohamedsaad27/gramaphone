@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة الطلبات</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf8f5; --surface:#f3efe9; --card:#fff; --ink:#1c1714; --muted:#6b625b;
+  --line:#e7e1d9; --bronze:#94602f; --bronze-2:#b07b45; --on-bronze:#fff;
+  --ok:#2f7a4f; --err:#b3261e; --info:#2b5f8f; --warn:#9a6b00;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#1a1613; --surface:#241f1b; --card:#2a241f; --ink:#f3ede6; --muted:#b5aaa0;
+    --line:#3a322b; --bronze:#c68b52; --bronze-2:#d49d66; --on-bronze:#1a1613;
+    --ok:#6cc08f; --err:#f08a80; --info:#82b4e3; --warn:#e3b553; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1a1613; --surface:#241f1b; --card:#2a241f; --ink:#f3ede6; --muted:#b5aaa0;
+  --line:#3a322b; --bronze:#c68b52; --bronze-2:#d49d66; --on-bronze:#1a1613;
+  --ok:#6cc08f; --err:#f08a80; --info:#82b4e3; --warn:#e3b553; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Almarai",Tahoma,"Segoe UI",Arial,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:22px;margin:0;font-weight:800}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:700;font-size:14px;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn-primary{background:linear-gradient(180deg,var(--bronze-2),var(--bronze));color:var(--on-bronze);border-color:transparent}
+.btn:disabled{opacity:.6;cursor:default}
+input[type=text],input[type=password],input[type=search],select{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:0}
+input:focus,select:focus{outline:none;border-color:var(--bronze);box-shadow:0 0 0 3px color-mix(in srgb,var(--bronze) 22%,transparent)}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:16px}
+.login form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;width:100%;max-width:360px;display:grid;gap:14px}
+.login p{margin:0;color:var(--muted);font-size:14px}
+.login .msg{color:var(--err);min-height:1.2em}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.top .acts{display:flex;gap:8px;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:13px}
+
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.stat b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:13px}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.filters input{flex:1 1 220px}
+
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{padding:12px;text-align:right;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:13px;color:var(--muted);font-weight:700;background:var(--surface)}
+tr:last-child td{border-bottom:0}
+td .sub{color:var(--muted);font-size:13px}
+.phone{direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums;font-weight:700}
+.links{display:flex;gap:10px;margin-top:4px;font-size:13px}
+.links a{color:var(--bronze);text-decoration:none;font-weight:700}
+.links a:hover{text-decoration:underline}
+.addr{max-width:280px;white-space:pre-wrap;word-break:break-word}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.st{border-radius:999px;padding:4px 10px;font-weight:700;font-size:13px;border:1px solid var(--line)}
+.st[data-s=new]{color:var(--bronze);border-color:color-mix(in srgb,var(--bronze) 50%,transparent)}
+.st[data-s=confirmed]{color:var(--info);border-color:color-mix(in srgb,var(--info) 50%,transparent)}
+.st[data-s=shipped]{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 50%,transparent)}
+.st[data-s=delivered]{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 50%,transparent)}
+.st[data-s=cancelled]{color:var(--muted);text-decoration:line-through}
+.del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;padding:4px 0;margin-top:6px}
+.del:hover{color:var(--err)}
+.empty{text-align:center;color:var(--muted);padding:48px 16px;background:var(--card);border:1px dashed var(--line);border-radius:14px}
+.toast{position:fixed;inset-inline:0;bottom:20px;margin:auto;width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+tr.isnew td:first-child{box-shadow:inset -3px 0 0 var(--bronze)}
+
+@media (max-width:820px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  table,tbody,tr,td{display:block;width:100%}
+  thead{display:none}
+  table{background:none;border:0}
+  tr{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;padding:6px 0}
+  td{border:0;padding:6px 14px}
+  td[data-l]::before{content:attr(data-l);display:block;color:var(--muted);font-size:12px}
+  .addr{max-width:none}
+  tr.isnew{box-shadow:inset -3px 0 0 var(--bronze)}
+  tr.isnew td:first-child{box-shadow:none}
+}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="login" id="loginView">
+  <form id="loginForm">
+    <h1>لوحة الطلبات</h1>
+    <p>اكتب كلمة السر عشان تشوف الطلبات.</p>
+    <input type="password" id="pw" autocomplete="current-password" placeholder="كلمة السر" required>
+    <button class="btn btn-primary" type="submit" style="justify-content:center">دخول</button>
+    <div class="msg" id="loginMsg" role="alert"></div>
+  </form>
+</div>
+
+<div class="wrap" id="appView" hidden>
+  <div class="top">
+    <div>
+      <h1>الطلبات</h1>
+      <div class="muted" id="updated"></div>
+    </div>
+    <div class="acts">
+      <button class="btn" id="refresh" type="button">تحديث</button>
+      <button class="btn" id="csv" type="button">تصدير Excel (CSV)</button>
+      <button class="btn" id="logout" type="button">خروج</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="k-all">0</b><span>كل الطلبات</span></div>
+    <div class="stat"><b id="k-new">0</b><span>جديدة محتاجة تأكيد</span></div>
+    <div class="stat"><b id="k-today">0</b><span>طلبات النهارده</span></div>
+    <div class="stat"><b id="k-rev">0</b><span>إجمالي غير الملغي (ج.م)</span></div>
+  </div>
+
+  <div class="filters">
+    <input type="search" id="q" placeholder="دور بالاسم أو الرقم أو المحافظة">
+    <select id="fs">
+      <option value="">كل الحالات</option>
+    </select>
+  </div>
+
+  <div id="list"></div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const STATUS = { new: "جديد", confirmed: "متأكد", shipped: "اتشحن", delivered: "اتسلم", cancelled: "ملغي" };
+const KEY = "gramaphone_admin_pw";
+let pw = "", orders = [], seen = new Set(), timer;
+
+const $ = id => document.getElementById(id);
+const num = n => Number(n || 0).toLocaleString("en-US");
+const store = {
+  get(){ try { return sessionStorage.getItem(KEY) || ""; } catch { return ""; } },
+  set(v){ try { v ? sessionStorage.setItem(KEY, v) : sessionStorage.removeItem(KEY); } catch {} }
+};
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("show"); clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("show"), 2200); }
+const fmtDate = iso => new Date(iso).toLocaleString("ar-EG", { timeZone: "Africa/Cairo", day: "numeric", month: "short", hour: "numeric", minute: "2-digit" });
+const cairoDay = d => new Date(d).toLocaleDateString("en-CA", { timeZone: "Africa/Cairo" });
+
+Object.entries(STATUS).forEach(([k, v]) => { const o = document.createElement("option"); o.value = k; o.textContent = v; $("fs").appendChild(o); });
+
+async function api(method, path, body){
+  const r = await fetch(path, {
+    method, cache: "no-store",
+    headers: { Authorization: "Bearer " + pw, ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const j = await r.json().catch(() => ({}));
+  if (r.status === 401) { const e = new Error("auth"); e.auth = true; throw e; }
+  if (!r.ok || !j.ok) throw new Error(j.error || r.status);
+  return j;
+}
+
+async function load(quiet){
+  const b = $("refresh"); b.disabled = true;
+  try {
+    const j = await api("GET", "/api/orders");
+    const fresh = seen.size ? j.orders.filter(o => !seen.has(o.id)).length : 0;
+    orders = j.orders; orders.forEach(o => seen.add(o.id));
+    render();
+    $("updated").textContent = "آخر تحديث: " + new Date().toLocaleTimeString("ar-EG", { hour: "numeric", minute: "2-digit" });
+    if (fresh) toast("وصل " + num(fresh) + " طلب جديد");
+    else if (!quiet) toast("تم التحديث");
+    return true;
+  } catch (e) {
+    if (e.auth) { logout("كلمة السر غلط."); return false; }
+    toast(e.message === "no-admin-password" ? "لازم تضيف ADMIN_PASSWORD في Vercel" : "مقدرناش نجيب الطلبات");
+    return false;
+  } finally { b.disabled = false; }
+}
+
+function cell(tr, label, cls){ const td = document.createElement("td"); if (label) td.dataset.l = label; if (cls) td.className = cls; tr.appendChild(td); return td; }
+
+function render(){
+  const today = cairoDay(Date.now());
+  $("k-all").textContent = num(orders.length);
+  $("k-new").textContent = num(orders.filter(o => o.status === "new").length);
+  $("k-today").textContent = num(orders.filter(o => cairoDay(o.createdAt) === today).length);
+  $("k-rev").textContent = num(orders.filter(o => o.status !== "cancelled").reduce((s, o) => s + (o.total || 0), 0));
+
+  const q = $("q").value.trim().toLowerCase(), fs = $("fs").value;
+  const rows = orders.filter(o => (!fs || o.status === fs) &&
+    (!q || [o.name, o.phone, o.gov, o.city, o.address].join(" ").toLowerCase().includes(q)));
+
+  const list = $("list"); list.textContent = "";
+  if (!rows.length) {
+    const d = document.createElement("div"); d.className = "empty";
+    d.textContent = orders.length ? "مفيش طلبات بالفلتر ده." : "لسه مفيش طلبات. أول ما حد يملا الفورم هيظهر هنا.";
+    list.appendChild(d); return;
+  }
+
+  const table = document.createElement("table");
+  table.innerHTML = "<thead><tr><th>العميل</th><th>العنوان</th><th>العرض</th><th>الإجمالي</th><th>التاريخ</th><th>الحالة</th></tr></thead>";
+  const tb = document.createElement("tbody");
+  rows.forEach(o => {
+    const tr = document.createElement("tr"); if (o.status === "new") tr.className = "isnew";
+
+    const c1 = cell(tr, "");
+    const nm = document.createElement("div"); nm.style.fontWeight = 700; nm.textContent = o.name; c1.appendChild(nm);
+    const ph = document.createElement("div"); ph.className = "phone"; ph.textContent = o.phone; c1.appendChild(ph);
+    const intl = o.phone.startsWith("20") ? o.phone : "2" + o.phone;
+    const links = document.createElement("div"); links.className = "links";
+    links.innerHTML = '<a target="_blank" rel="noopener">اتصال</a><a target="_blank" rel="noopener">واتساب</a>';
+    links.children[0].href = "tel:+" + intl; links.children[1].href = "https://wa.me/" + intl;
+    c1.appendChild(links);
+
+    const c2 = cell(tr, "العنوان");
+    const g = document.createElement("div"); g.style.fontWeight = 700; g.textContent = o.gov + " - " + o.city; c2.appendChild(g);
+    const a = document.createElement("div"); a.className = "sub addr"; a.textContent = o.address; c2.appendChild(a);
+
+    cell(tr, "العرض").textContent = (o.packTitle || o.pack) + " × " + num(o.qty);
+    cell(tr, "الإجمالي", "num").textContent = num(o.total) + " ج.م";
+    cell(tr, "التاريخ", "num sub").textContent = fmtDate(o.createdAt);
+
+    const c6 = cell(tr, "الحالة");
+    const sel = document.createElement("select"); sel.className = "st"; sel.dataset.s = o.status;
+    sel.setAttribute("aria-label", "حالة طلب " + o.name);
+    Object.entries(STATUS).forEach(([k, v]) => { const op = document.createElement("option"); op.value = k; op.textContent = v; op.selected = k === o.status; sel.appendChild(op); });
+    sel.addEventListener("change", async () => {
+      const prev = o.status; sel.disabled = true;
+      try { const j = await api("PATCH", "/api/orders", { id: o.id, status: sel.value }); Object.assign(o, j.order); toast("اتغيرت الحالة لـ " + STATUS[o.status]); render(); }
+      catch (e) { sel.value = prev; sel.disabled = false; if (e.auth) logout("انتهت الجلسة."); else toast("مقدرناش نغير الحالة"); }
+    });
+    c6.appendChild(sel);
+    const del = document.createElement("button"); del.className = "del"; del.type = "button"; del.textContent = "حذف";
+    del.addEventListener("click", async () => {
+      if (!confirm("متأكد إنك عايز تحذف طلب " + o.name + "؟ مش هينفع ترجعه.")) return;
+      try { await api("DELETE", "/api/orders?id=" + encodeURIComponent(o.id)); orders = orders.filter(x => x.id !== o.id); render(); toast("اتحذف الطلب"); }
+      catch (e) { if (e.auth) logout("انتهت الجلسة."); else toast("مقدرناش نحذف الطلب"); }
+    });
+    c6.appendChild(document.createElement("br")); c6.appendChild(del);
+
+    tb.appendChild(tr);
+  });
+  table.appendChild(tb); list.appendChild(table);
+}
+
+function csv(){
+  const cols = [["createdAt","التاريخ"],["name","الاسم"],["phone","الموبايل"],["gov","المحافظة"],["city","المنطقة"],["address","العنوان"],["packTitle","العرض"],["qty","الكمية"],["total","الإجمالي"],["status","الحالة"]];
+  const esc = v => { v = String(v == null ? "" : v); if (/^[=+\-@]/.test(v)) v = "'" + v; return '"' + v.replace(/"/g, '""') + '"'; };
+  const lines = [cols.map(c => esc(c[1])).join(",")].concat(orders.map(o => cols.map(([k]) =>
+    esc(k === "status" ? STATUS[o.status] : k === "createdAt" ? new Date(o.createdAt).toLocaleString("en-GB", { timeZone: "Africa/Cairo" }) : k === "phone" ? "‎" + o.phone : o[k])).join(",")));
+  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+  a.download = "orders-" + cairoDay(Date.now()) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function showApp(){ $("loginView").hidden = true; $("appView").hidden = false; clearInterval(timer); timer = setInterval(() => load(true), 60000); }
+function logout(msg){
+  pw = ""; store.set(""); clearInterval(timer); orders = []; seen = new Set();
+  $("appView").hidden = true; $("loginView").hidden = false; $("loginMsg").textContent = msg || ""; $("pw").value = ""; $("pw").focus();
+}
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault(); $("loginMsg").textContent = "";
+  pw = $("pw").value;
+  const btn = e.target.querySelector("button"); btn.disabled = true;
+  if (await load(true)) { store.set(pw); showApp(); }
+  btn.disabled = false;
+});
+$("refresh").addEventListener("click", () => load());
+$("csv").addEventListener("click", csv);
+$("logout").addEventListener("click", () => logout());
+$("q").addEventListener("input", render);
+$("fs").addEventListener("change", render);
+
+pw = store.get();
+if (pw) load(true).then(ok => ok && showApp());
+</script>
+</body>
+</html>
